@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+{% load custom_filters %}
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>評価フォーム - {{ timepoint }}</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background-color: #f9f9f9;
+      margin: 0;
+      padding: 2rem;
+      display: flex;
+      justify-content: center;
+    }
+
+    .card {
+      background-color: white;
+      padding: 2.5rem 3rem;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      max-width: 800px;
+      width: 100%;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 2rem;
+      color: #333;
+    }
+
+    h3 {
+      text-align: left;
+      color: #555;
+      margin-top: 2rem;
+      margin-bottom: 0.5rem;
+      font-size: 1.1rem;
+      border-bottom: 1px solid #ccc;
+      padding-bottom: 0.2rem;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    label {
+      font-weight: bold;
+      margin-top: 0.5rem;
+      display: block;
+    }
+
+    input, select {
+      padding: 0.6rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+      width: 100%;
+      margin-top: 0.3rem;
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    button {
+      padding: 1rem;
+      background-color: #2196F3;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      margin-top: 2rem;
+    }
+
+    button:hover {
+      background-color: #1976D2;
+    }
+
+    .inline-radio input[type="radio"] {
+  display: none;
+}
+
+.inline-radio label {
+  display: inline-block;
+  padding: 0.4rem 1rem;
+  margin-right: 0.4rem;
+  border-radius: 6px;
+  background-color: #eee;
+  cursor: pointer;
+  border: 1px solid #ccc;
+}
+
+.inline-radio input[type="radio"]:checked + label {
+  background-color: #4CAF50;
+  color: white;
+  border-color: #4CAF50;
+}
+
+
+input[type="radio"] {
+  display: none;
+}
+
+input[type="radio"] + label {
+  display: inline-block;
+  padding: 0.5rem 1.2rem;
+  margin: 0.3rem;
+  border: 2px solid #2196F3;
+  border-radius: 8px;
+  background-color: white;
+  color: #2196F3;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+input[type="radio"]:checked + label {
+  background-color: #2196F3;
+  color: white;
+  font-weight: bold;
+}
+
+.btn-logout {
+  background-color: #f44336;
+  color: white;
+  padding: 0.5rem 1.2rem;
+  border-radius: 8px;
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: background-color 0.3s ease;
+}
+
+.btn-logout:hover {
+  background-color: #d32f2f;
+}
+
+  </style>
+</head>
+
+<body>
+  <div class="card">
+    <div style="text-align: right;">
+      <a href="{% url 'logout' %}" class="btn-logout">ログアウト</a>
+    </div>
+
+    <h2> {{ timepoint_label }}</h2>
+    <form method="post">
+      {% csrf_token %}
+
+      <h3>感覚機能評価</h3>
+      <div class="form-group">
+        <label><strong>A領域</strong></label>
+        {{ form.sensory_A }}
+      </div>
+      <div class="form-group">
+        <label><strong>B領域</strong></label>
+        {{ form.sensory_B }}
+      </div>
+      <div class="form-group">
+        <label><strong>C領域</strong></label>
+        {{ form.sensory_C }}
+      </div>
+      <div class="form-group">
+        <label><strong>D領域</strong></label>
+        {{ form.sensory_D }}
+      </div>
+
+      <h3>運動機能評価</h3>
+      <div class="form-group">
+        <label><strong>肘関節屈曲</strong></label>
+        {{ form.motor_elbow }}
+      </div>
+
+      <div class="form-group">
+        <label><strong>グーパーグーパー</strong></label>
+        {{ form.motor_hand }}
+      </div>
+
+
+      <h3>ブロックポイント観察</h3>
+      <div class="form-group">
+        <label><strong>ブロックポイント①</strong></label>
+        {{ form.observation_1 }}
+      </div>
+      <div class="form-group">
+        <label><strong>ブロックポイント②</strong></label>
+        {{ form.observation_2 }}
+      </div>
+      <div class="form-group">
+        <label><strong>ブロックポイント③</strong></label>
+        {{ form.observation_3 }}
+      </div>
+      <div class="form-group">
+        <label><strong>ブロックポイント④</strong></label>
+        {{ form.observation_4 }}
+      </div>
+
+
+      <h3>記録者サイン(イニシャルでOK　例：AA)</h3>
+      {{ form.signer.label_tag }} {{ form.signer }}
+
+      <button type="submit">{% if step == 7 %}保存して終了{% else %}次へ{% endif %}</button>
+    </form>
+
+    <hr style="margin: 2rem 0;">
+    <h3>患者情報・手術情報</h3>
+    <div style="text-align: right; margin-top: 0.5rem;">
+      <a href="{% url 'edit_operation' operation.id %}" 
+         style="display: inline-block; background-color: #4CAF50; color: white; padding: 0.5rem 1rem; border-radius: 6px; text-decoration: none; font-size: 0.9rem;">
+      患者・手術情報を編集する
+      </a>
+    </div>
+    <ul>
+      <li>患者ID：{{ operation.patient.patient_code }}</li>
+      <li>手術日：{{ operation.date|date:"Y-m-d" }}（{{ operation.date|japanese_weekday }}）{{ operation.date|date:"H:i" }}</li>
+      <li>術式：{{ operation.procedure }}</li>
+      <li>術者：{{ operation.surgeon }}</li>
+      <li>年齢：{{ operation.age }}歳</li>
+      <li>性別：{{ operation.get_gender_display }}</li>
+      <li>身長：{{ operation.height }} cm</li>
+      <li>体重：{{ operation.weight }} kg</li>
+      <li>分類：{{ operation.get_surgery_type_display }}</li>
+    </ul>
+    
+    {% if anesthesia %}
+      <h3>麻酔情報</h3>
+      <div style="text-align: right; margin-top: 0.5rem;">
+        <a href="{% url 'edit_anesthesia_info' operation.id %}" 
+           style="display: inline-block; background-color: #FF9800; color: white; padding: 0.5rem 1rem; border-radius: 6px; text-decoration: none; font-size: 0.9rem;">
+          麻酔情報を編集する
+        </a>
+    </div>
+      <ul>
+        <li>ブロック使用薬剤：{{ anesthesia.drug_type }}</li>
+        <li>①：{{ anesthesia.block_amount_1 }} ml</li>
+        <li>②：{{ anesthesia.block_amount_2 }} ml</li>
+        <li>③：{{ anesthesia.block_amount_3 }} ml</li>
+        <li>④：{{ anesthesia.block_amount_4 }} ml</li>
+        <li>追加局所麻酔 0.5％：{{ anesthesia.additional_0_5 }} ml</li>
+        <li>追加局所麻酔 1％：{{ anesthesia.additional_1_0 }} ml</li>
+      </ul>
+    {% endif %}
+    
+<h3>入力済み評価の確認</h3>
+
+<table border="1" cellspacing="0" cellpadding="6" style="width: 100%; border-collapse: collapse;">
+  <thead>
+    <tr style="background-color: #eee;">
+      <th></th>
+      <th>記録時刻</th>
+      <th>A</th><th>B</th><th>C</th><th>D</th>
+      <th>肘</th><th>グ</th>
+      <th>①</th><th>②</th><th>③</th><th>④</th>
+      <th>記録者</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for e in evaluations %}
+    <tr>
+      <td style="text-align: left; white-space: nowrap;">
+        {{ e.get_timepoint_display }}
+        <a href="{% url 'edit_evaluation' e.id %}" 
+           style="
+            margin-left: 0.6rem;
+            background-color: #4CAF50;
+            color: white;
+            padding: 0.2rem 0.6rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            text-decoration: none;
+            display: inline-block;">
+          編集
+        </a>
+      </td>
+      
+      <td>{{ e.created_at|date:"Y-m-d H:i" }}</td>
+      <td>{{ e.sensory_A }}</td>
+      <td>{{ e.sensory_B }}</td>
+      <td>{{ e.sensory_C }}</td>
+      <td>{{ e.sensory_D }}</td>
+      <td>{{ e.motor_elbow }}</td>
+      <td>{{ e.motor_hand }}</td>
+      <td>{{ e.observation_1 }}</td>
+      <td>{{ e.observation_2 }}</td>
+      <td>{{ e.observation_3 }}</td>
+      <td>{{ e.observation_4 }}</td>
+      <td>{{ e.signer }}</td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="12">まだ入力はありません。</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<div style="text-align: center; margin-top: 2rem;">
+  <a href="{% url 'dashboard' %}" 
+     style="display: inline-block; background-color: #2196F3; color: white; padding: 0.7rem 1.5rem; border-radius: 8px; text-decoration: none;">
+    ダッシュボードに戻る
+  </a>
+</div>
+</div>
+</body>
+</html>
+  </div>
+</body>
+</html>

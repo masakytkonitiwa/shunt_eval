@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>評価サマリー</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background-color: #f4f4f4;
+      padding: 2rem;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+    }
+
+    .container {
+      background-color: white;
+      padding: 2rem 3rem;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 960px;
+    }
+
+    h2 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 2rem;
+    }
+
+    h3 {
+      margin-top: 2rem;
+      border-bottom: 2px solid #ccc;
+      padding-bottom: 0.3rem;
+      color: #444;
+    }
+
+    ul {
+      list-style: none;
+      padding-left: 1rem;
+    }
+
+    ul li {
+      padding: 0.3rem 0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+    }
+
+    th, td {
+      border: 1px solid #ccc;
+      padding: 0.6rem;
+      text-align: center;
+    }
+
+    thead {
+      background-color: #e0f0ff;
+    }
+
+    .back-btn {
+      margin-top: 2rem;
+      text-align: center;
+    }
+
+    .back-btn a {
+      background-color: #2196F3;
+      color: white;
+      padding: 0.8rem 1.5rem;
+      border-radius: 8px;
+      text-decoration: none;
+    }
+
+    .back-btn a:hover {
+      background-color: #1976D2;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    {% load custom_filters %}
+
+    <h2>評価サマリー - 患者ID {{ operation.patient.patient_code }}</h2>
+
+    <h3>患者・手術情報</h3>
+    <div style="text-align: right; margin-top: -1rem;">
+        <a href="{% url 'edit_operation' operation.id %}" 
+           style="display: inline-block; background-color: #4CAF50; color: white; padding: 0.5rem 1rem; border-radius: 6px; text-decoration: none; font-size: 0.9rem;">
+           患者・手術情報を編集する
+        </a>
+      </div>
+
+    <ul>
+      <li>手術日：{{ operation.date|date:"Y-m-d" }}（{{ operation.date|japanese_weekday }}）{{ operation.date|date:"H:i" }}</li>
+      <li>術式：{{ operation.procedure }}</li>
+      <li>術者：{{ operation.surgeon }}</li>
+      <li>年齢：{{ operation.age }}歳</li>
+      <li>性別：{{ operation.get_gender_display }}</li>
+      <li>身長：{{ operation.height }} cm</li>
+      <li>体重：{{ operation.weight }} kg</li>
+      <li>分類：{{ operation.get_surgery_type_display }}</li>
+
+    </ul>
+
+    {% if anesthesia %}
+    <h3>麻酔情報</h3>
+    <div style="text-align: right; margin-top: -1rem;">
+        <a href="{% url 'edit_anesthesia_info' operation.id %}" 
+           style="display: inline-block; background-color: #FF9800; color: white; padding: 0.5rem 1rem; border-radius: 6px; text-decoration: none; font-size: 0.9rem;">
+          麻酔情報を編集する
+        </a>
+    </div>
+
+    <ul>
+        <li>ブロック使用薬剤：{{ anesthesia.drug_type }}</li>
+        <li>ポイント①：{{ anesthesia.block_amount_1 }} ml</li>
+        <li>ポイント②：{{ anesthesia.block_amount_2 }} ml</li>
+        <li>ポイント③：{{ anesthesia.block_amount_3 }} ml</li>
+        <li>ポイント④：{{ anesthesia.block_amount_4 }} ml</li>
+        <li>追加局所麻酔（0.5%）：{{ anesthesia.additional_0_5 }} ml</li>
+        <li>追加局所麻酔（1%）：{{ anesthesia.additional_1_0 }} ml</li>
+      </ul>
+    {% endif %}
+
+    <h3>評価一覧</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>時点</th>
+          <th>記録時刻</th>
+          <th>A</th><th>B</th><th>C</th><th>D</th>
+          <th>肘</th><th>手</th>
+          <th>①</th><th>②</th><th>③</th><th>④</th>
+          <th>記録者</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for e in evaluations %}
+        <tr>
+          <td>
+            {{ e.get_timepoint_display }}
+            <a href="{% url 'edit_evaluation' e.id %}" 
+            style="
+             display: inline-block;
+             background-color: #4CAF50;
+             color: white;
+             padding: 0.2rem 0.6rem;
+             margin-left: 0.4rem;
+             border-radius: 6px;
+             font-size: 0.75rem;
+             text-decoration: none;">
+           編集
+         </a>
+          </td>
+          <td>{{ e.created_at|date:"Y-m-d" }}（{{ e.created_at|japanese_weekday }}）{{ e.created_at|date:"H:i" }}</td>
+          <td>{{ e.sensory_A }}</td>
+          <td>{{ e.sensory_B }}</td>
+          <td>{{ e.sensory_C }}</td>
+          <td>{{ e.sensory_D }}</td>
+          <td>{{ e.motor_elbow }}</td>
+          <td>{{ e.motor_hand }}</td>
+          <td>{{ e.observation_1 }}</td>
+          <td>{{ e.observation_2 }}</td>
+          <td>{{ e.observation_3 }}</td>
+          <td>{{ e.observation_4 }}</td>
+          <td>{{ e.signer }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="13">まだ入力はありません。</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <div class="back-btn">
+      <a href="{% url 'dashboard' %}">ダッシュボードに戻る</a>
+    </div>
+  </div>
+</body>
+</html>

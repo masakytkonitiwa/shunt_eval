@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>手術日なし</title>
+</head>
+<body>
+  <h2>患者ID {{ patient_id }} の手術日は登録されていません。</h2>
+  <form action="{% url 'wizard' %}">
+    <button type="submit">評価に進む（手術なし）</button>
+  </form>
+</body>
+</html>

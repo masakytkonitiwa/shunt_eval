@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>患者ID入力</title>
+  <style>
+    body {
+      background-color: #f4f4f4;
+      font-family: sans-serif;
+      margin: 0;
+    }
+
+    .logout-bar {
+      display: flex;
+      justify-content: flex-end;
+      padding: 1rem;
+      background-color: #eaeaea;
+    }
+
+    .logout-bar a {
+      color: #333;
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: bold;
+    }
+
+    .logout-bar a:hover {
+      text-decoration: underline;
+    }
+
+    .container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: calc(100vh - 60px); /* ログアウトバーの分を引く */
+    }
+
+    .card {
+      background-color: white;
+      padding: 2rem 3rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+    }
+
+    h2 {
+      margin-bottom: 1.5rem;
+      color: #333;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    input[type="number"] {
+      padding: 0.5rem;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+
+    button {
+      padding: 0.7rem;
+      font-size: 1rem;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+  <div class="logout-bar">
+    <a href="{% url 'logout' %}">ログアウト</a>
+  </div>
+
+  <div class="container">
+    <div class="card">
+      <h2>患者IDを入力してください</h2>
+      <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">送信</button>
+      </form>
+    </div>
+  </div>
+</body>
+</html>
