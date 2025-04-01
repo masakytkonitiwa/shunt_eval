@@ -19,6 +19,7 @@ class Operation(models.Model):
         ('PTA', 'PTA'),
         ('TPA', '血栓除去PTA'),
         ('OPTPA', '開創血栓除去PTA'),
+        ('ETC', 'その他'),
     ]
 
     SURGERY_TYPE_CHOICES = [
