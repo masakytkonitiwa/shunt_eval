@@ -26,6 +26,15 @@ class Operation(models.Model):
         ('P', 'プライマリー'),
         ('R', 'ノンプライマリー'),
     ]
+    
+    SURGEON_CHOICES = [
+        ('HB', 'HB'),
+        ('NG', 'NG'),
+        ('ST', 'ST'),
+        ('KB', 'KB'),
+        ('ETC', 'ETC'),
+    ]
+    
     patient = models.ForeignKey(
         Patient,
         related_name='operations',
@@ -41,7 +50,7 @@ class Operation(models.Model):
     weight = models.DecimalField(max_digits=5, decimal_places=1, verbose_name="体重(kg)", default=0)
     procedure = models.CharField(max_length=10, choices=PROCEDURE_CHOICES, verbose_name="術式", default='AVF')
     surgery_type = models.CharField(max_length=1, choices=SURGERY_TYPE_CHOICES, verbose_name="手術の種類", default='P')
-    surgeon = models.CharField(max_length=100, verbose_name="術者", default="M")  # 術者
+    surgeon = models.CharField(max_length=100, choices=SURGEON_CHOICES, verbose_name="術者", default='HB')
     def __str__(self):
         return f"患者ID: {self.patient.id} の手術 ({self.date})"
     
