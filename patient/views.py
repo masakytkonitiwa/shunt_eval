@@ -113,7 +113,7 @@ def evaluation_step_view(request, operation_id, step):
     timepoint_label = dict(Evaluation.TIMEPOINT_CHOICES).get(timepoint, timepoint)
 
     if request.method == 'POST':
-        form = EvaluationForm(request.POST)
+        form = EvaluationForm(request.POST, step=step)
         if form.is_valid():
             evaluation = form.save(commit=False)
             evaluation.operation = operation
@@ -126,9 +126,8 @@ def evaluation_step_view(request, operation_id, step):
                     return redirect('evaluation_step', operation_id=operation.id, step=step + 1)
             else:
                 return redirect('evaluation_summary', operation_id=operation.id)
-
     else:
-        form = EvaluationForm()
+        form = EvaluationForm(step=step)  # ← GETのときは step だけ渡す！
 
     evaluations = Evaluation.objects.filter(operation=operation).order_by('timepoint')
 
