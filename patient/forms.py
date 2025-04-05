@@ -41,6 +41,7 @@ SENSORY_CHOICES = [
     (0, '0'), (1, '1'), (2, '2'),
 ]
 
+
 class EvaluationForm(forms.ModelForm):
     class Meta:
         model = Evaluation
@@ -53,6 +54,24 @@ class EvaluationForm(forms.ModelForm):
         widgets = {
             'signer': forms.TextInput(attrs={'placeholder': '記録者名'}),
         }
+
+    # ★ここを追加！！！
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # オペ前（timepoint == '0'）の時だけデフォルト値を設定
+        instance = kwargs.get('instance')
+        if not instance:
+            self.fields['sensory_A'].initial = 0
+            self.fields['sensory_B'].initial = 0
+            self.fields['sensory_C'].initial = 0
+            self.fields['sensory_D'].initial = 0
+            self.fields['motor_elbow'].initial = 0
+            self.fields['motor_hand'].initial = 0
+            self.fields['observation_1'].initial = 0
+            self.fields['observation_2'].initial = 0
+            self.fields['observation_3'].initial = 0
+            self.fields['observation_4'].initial = 0
 
 
 
