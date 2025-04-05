@@ -275,7 +275,7 @@ input[type="radio"]:checked + label {
       <h3>記録者サイン(イニシャルでOK　例：AA)</h3>
       {{ form.signer.label_tag }} {{ form.signer }}
 
-      <button type="submit">{% if step == 7 %}保存して終了{% else %}次へ{% endif %}</button>
+      <button type="submit">{% if step == 7 %}保存して終了{% else %}保存{% endif %}</button>
     </form>
 
     <hr style="margin: 2rem 0;">
