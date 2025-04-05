@@ -21,8 +21,17 @@ class OperationForm(forms.ModelForm):
             'surgeon'  # ← 術者を追加！
         ]
         widgets = {
-            'date': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
+            'date': forms.DateTimeInput(attrs={'type': 'datetime-local'},
+            format='%Y-%m-%dT%H:%M'  # ← ここ追加！
+            ),
         }
+
+    # ここを追加！
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance and self.instance.date:
+            self.initial['date'] = self.instance.date.strftime('%Y-%m-%dT%H:%M')
+
 
 SENSORY_CHOICES = [
     (0, '0'), (1, '1'), (2, '2'),
