@@ -14,27 +14,45 @@ class PatientIDForm(forms.ModelForm):
             'patient_code': '患者ID',
         }
     
-    
+from django.utils.timezone import localtime
+from django import forms
+from .models import Operation
+
+
 class OperationForm(forms.ModelForm):
     class Meta:
         model = Operation
         fields = [
             'age', 'gender', 'height', 'weight',
             'date', 'procedure', 'surgery_type',
-            'surgeon'  # ← 術者を追加！
+            'surgeon'
         ]
         widgets = {
-            'date': forms.DateTimeInput(attrs={'type': 'datetime-local'},
-            format='%Y-%m-%dT%H:%M'  # ← ここ追加！
-            ),
+            'age': forms.NumberInput(attrs={'min': 0, 'max': 120, 'step': 1}),
+            'height': forms.NumberInput(attrs={'min': 0, 'max': 250, 'step': 0.1}),
+            'weight': forms.NumberInput(attrs={'min': 0, 'max': 200, 'step': 0.1}),
+            'date': forms.DateTimeInput(attrs={'type': 'datetime-local'}, format='%Y-%m-%dT%H:%M'),
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if self.instance and self.instance.date:
-            # ここを変える！
             localized_date = localtime(self.instance.date)
             self.initial['date'] = localized_date.strftime('%Y-%m-%dT%H:%M')
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        fields_to_check = ['age', 'height', 'weight']
+
+        for field in fields_to_check:
+            value = cleaned_data.get(field)
+            if value is not None:
+                try:
+                    float(value)
+                except (ValueError, TypeError):
+                    self.add_error(field, "半角の数字で入力してください。")
+
 
 
 SENSORY_CHOICES = [
@@ -100,6 +118,23 @@ class AnesthesiaInfoForm(forms.ModelForm):
             'block_amount_2': forms.NumberInput(attrs={'step': '0.5', 'min': '0', 'max': '30'}),
             'block_amount_3': forms.NumberInput(attrs={'step': '0.5', 'min': '0', 'max': '30'}),
             'block_amount_4': forms.NumberInput(attrs={'step': '0.5', 'min': '0', 'max': '30'}),
-            'additional_0_5': forms.NumberInput(attrs={'step': '0.5', 'min': '0', 'max': '30'}),
-            'additional_1_0': forms.NumberInput(attrs={'step': '0.5', 'min': '0', 'max': '30'}),
+            'additional_0_5': forms.NumberInput(attrs={'step': '0.5', 'min': '0', 'max': '50'}),
+            'additional_1_0': forms.NumberInput(attrs={'step': '0.5', 'min': '0', 'max': '50'}),
         }
+        
+    def clean(self):
+            cleaned_data = super().clean()
+
+            # 数値をチェックするフィールドリスト
+            fields_to_check = [
+                'block_amount_1', 'block_amount_2', 'block_amount_3', 'block_amount_4',
+                'additional_0_5', 'additional_1_0',
+            ]
+
+            for field in fields_to_check:
+                value = cleaned_data.get(field)
+                if value is not None:
+                    try:
+                        float(value)
+                    except (ValueError, TypeError):
+                        self.add_error(field, "半角の数字で入力してください。")
