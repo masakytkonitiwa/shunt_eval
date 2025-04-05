@@ -4,6 +4,8 @@ from .models import Evaluation
 from .models import AnesthesiaInfo
 from django.utils.timezone import localtime
 
+
+
 class PatientIDForm(forms.ModelForm):
     class Meta:
         model = Patient
@@ -53,6 +55,7 @@ class EvaluationForm(forms.ModelForm):
         }
 
 
+
 class AnesthesiaInfoForm(forms.ModelForm):
     class Meta:
         model = AnesthesiaInfo
@@ -73,4 +76,12 @@ class AnesthesiaInfoForm(forms.ModelForm):
             'block_amount_4': '④ (ml)',
             'additional_0_5': '0.5% 使用量 (ml)',
             'additional_1_0': '1% 使用量 (ml)',
+        }
+        widgets = {
+            'block_amount_1': forms.NumberInput(attrs={'step': '0.5', 'min': '0', 'max': '30'}),
+            'block_amount_2': forms.NumberInput(attrs={'step': '0.5', 'min': '0', 'max': '30'}),
+            'block_amount_3': forms.NumberInput(attrs={'step': '0.5', 'min': '0', 'max': '30'}),
+            'block_amount_4': forms.NumberInput(attrs={'step': '0.5', 'min': '0', 'max': '30'}),
+            'additional_0_5': forms.NumberInput(attrs={'step': '0.5', 'min': '0', 'max': '30'}),
+            'additional_1_0': forms.NumberInput(attrs={'step': '0.5', 'min': '0', 'max': '30'}),
         }
