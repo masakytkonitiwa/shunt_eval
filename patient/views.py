@@ -105,13 +105,12 @@ def add_new_operation_view(request):
 
 
 
-
 @login_required
 def evaluation_step_view(request, operation_id, step):
     operation = get_object_or_404(Operation, id=operation_id)
     anesthesia = AnesthesiaInfo.objects.filter(operation=operation).first()  # ✅ 麻酔情報取得
     timepoint = str(step)
-    timepoint_label = dict(Evaluation.TIMEPOINT_CHOICES).get(timepoint, timepoint)  # ✅ 追加
+    timepoint_label = dict(Evaluation.TIMEPOINT_CHOICES).get(timepoint, timepoint)
 
     if request.method == 'POST':
         form = EvaluationForm(request.POST)
@@ -133,15 +132,28 @@ def evaluation_step_view(request, operation_id, step):
 
     evaluations = Evaluation.objects.filter(operation=operation).order_by('timepoint')
 
+    # 🆕 ここから施行フラグ作成！！
+    performed_points = {
+        'performed_point_1': anesthesia.block_amount_1 > 0 if anesthesia else False,
+        'performed_point_2': anesthesia.block_amount_2 > 0 if anesthesia else False,
+        'performed_point_3': anesthesia.block_amount_3 > 0 if anesthesia else False,
+        'performed_point_4': anesthesia.block_amount_4 > 0 if anesthesia else False,
+    }
+
     return render(request, 'patient/evaluation_form.html', {
         'form': form,
         'step': step,
         'timepoint': timepoint,
-        'timepoint_label': timepoint_label,  # ← ここを追加！
+        'timepoint_label': timepoint_label,
         'evaluations': evaluations,
-        'operation': operation,        # ✅ 手術情報
-        'anesthesia': anesthesia,      # ✅ 麻酔情報
+        'operation': operation,
+        'anesthesia': anesthesia,
+        **performed_points,  # 🆕 ここでフラグをテンプレートに渡す
     })
+
+
+
+
     
 @login_required
 def add_anesthesia_info(request, operation_id):
