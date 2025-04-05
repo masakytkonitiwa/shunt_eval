@@ -2,6 +2,7 @@ from django import forms
 from .models import Operation, Patient
 from .models import Evaluation
 from .models import AnesthesiaInfo
+from django.utils.timezone import localtime
 
 class PatientIDForm(forms.ModelForm):
     class Meta:
@@ -26,11 +27,12 @@ class OperationForm(forms.ModelForm):
             ),
         }
 
-    # ここを追加！
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if self.instance and self.instance.date:
-            self.initial['date'] = self.instance.date.strftime('%Y-%m-%dT%H:%M')
+            # ここを変える！
+            localized_date = localtime(self.instance.date)
+            self.initial['date'] = localized_date.strftime('%Y-%m-%dT%H:%M')
 
 
 SENSORY_CHOICES = [
