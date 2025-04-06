@@ -375,8 +375,36 @@ input[type="radio"]:checked + label {
   </a>
 </div>
 </div>
-</body>
-</html>
-  </div>
+<script>
+  // ページロード時にlocalStorageからデータを復元する
+  window.onload = function() {
+      const fields = document.querySelectorAll('input, select, textarea');
+      fields.forEach(field => {
+          const saved = localStorage.getItem(field.name);
+          if (saved !== null) {
+              field.value = saved;
+          }
+      });
+  };
+  
+  // 入力するたびにlocalStorageに保存する
+  document.addEventListener('input', function(event) {
+      const field = event.target;
+      if (field.name) {
+          localStorage.setItem(field.name, field.value);
+      }
+  });
+  
+  // フォーム送信時にlocalStorageのデータをクリアする
+  document.addEventListener('submit', function(event) {
+      const fields = document.querySelectorAll('input, select, textarea');
+      fields.forEach(field => {
+          localStorage.removeItem(field.name);
+      });
+  });
+  </script>
+  
+
+
 </body>
 </html>
