@@ -27,4 +27,9 @@ urlpatterns = [
     path('evaluation/<int:evaluation_id>/edit/', views.edit_evaluation, name='edit_evaluation'),
 
 
+
+
+    path('test500/', views.test_server_error, name='test_server_error'),
+
+
 ]

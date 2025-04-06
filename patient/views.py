@@ -13,6 +13,10 @@ from .models import Evaluation
 from django.shortcuts import get_object_or_404
 from .models import Operation, AnesthesiaInfo
 from .forms import AnesthesiaInfoForm
+from django.http import HttpResponseServerError
+
+def test_server_error(request):
+    return HttpResponseServerError()
 
 
 @login_required

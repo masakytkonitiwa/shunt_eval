@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>エラーが発生しました</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background-color: #f8f8f8;
+      text-align: center;
+      padding: 5rem;
+    }
+    h1 {
+      font-size: 2.5rem;
+      color: #e53935;
+    }
+    p {
+      margin-top: 2rem;
+      font-size: 1.2rem;
+      color: #555;
+    }
+    a {
+      display: inline-block;
+      margin-top: 3rem;
+      padding: 1rem 2rem;
+      background-color: #2196F3;
+      color: white;
+      border-radius: 8px;
+      text-decoration: none;
+      font-size: 1rem;
+    }
+    a:hover {
+      background-color: #1976D2;
+    }
+  </style>
+</head>
+<body>
+  <h1>サーバーエラーが発生しました</h1>
+  <p>大変申し訳ありません。もう一度操作をお試しください。</p>
+
+  <a href="{% url 'dashboard' %}">ダッシュボードに戻る</a>
+</body>
+</html>
