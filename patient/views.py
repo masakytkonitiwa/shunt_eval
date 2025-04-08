@@ -154,10 +154,7 @@ def evaluation_step_view(request, operation_id, step):
         **performed_points,  # 🆕 ここでフラグをテンプレートに渡す
     })
 
-
-
-
-    
+from decimal import Decimal
 @login_required
 def add_anesthesia_info(request, operation_id):
     operation = get_object_or_404(Operation, id=operation_id)
@@ -169,16 +166,19 @@ def add_anesthesia_info(request, operation_id):
             anesthesia.operation = operation
             anesthesia.save()
             return redirect('evaluation_step', operation_id=operation.id, step=1)
+        else:
+            # 🛑 ここを追加 🛑
+            print("=== フォームエラー内容 ===")
+            print(form.errors)
     else:
-        # フォーム初期値の設定（数字や文字など）
         form = AnesthesiaInfoForm(initial={
-            'drug_type': 'E入',
-            'block_amount_1': 0,
-            'block_amount_2': 0,
-            'block_amount_3': 0,
-            'block_amount_4': 0,
-            'additional_0_5': 0,
-            'additional_1_0': 0,
+            'drug_type': 'Eなし',
+            'block_amount_1': "0.0",
+            'block_amount_2': "0.0",
+            'block_amount_3': "0.0",
+            'block_amount_4': "0.0",
+            'additional_0_5': "0.0",
+            'additional_1_0': "0.0",
         })
 
     return render(request, 'patient/anesthesia_form.html', {
@@ -233,6 +233,9 @@ def edit_operation(request, operation_id):
         'operation': operation
     })
 
+
+
+
 @login_required
 def edit_anesthesia_info(request, operation_id):
     operation = get_object_or_404(Operation, id=operation_id)
@@ -243,13 +246,22 @@ def edit_anesthesia_info(request, operation_id):
         if form.is_valid():
             form.save()
             return redirect('evaluation_summary', operation_id=operation.id)
+        else:
+            print("=== フォームエラー ===")
+            print(form.errors)
     else:
         form = AnesthesiaInfoForm(instance=anesthesia)
+        # 🛠ここ追加！！（初期値チェック）
+        print("=== 初期フォームの中身チェック ===")
+        print("block_amount_1:", form.initial.get('block_amount_1'))
+        print("additional_0_5:", form.initial.get('additional_0_5'))
 
     return render(request, 'patient/edit_anesthesia.html', {
         'form': form,
         'operation': operation
     })
+
+    
     
 @login_required
 def edit_evaluation(request, evaluation_id):

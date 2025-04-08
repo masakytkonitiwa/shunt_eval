@@ -84,13 +84,14 @@
 }
 
 .inline-radio label {
-  display: inline-block;
+  display: block;
   padding: 0.4rem 1rem;
   margin-right: 0.4rem;
   border-radius: 6px;
   background-color: #eee;
   cursor: pointer;
   border: 1px solid #ccc;
+  width: 80%;
 }
 
 .inline-radio input[type="radio"]:checked + label {
@@ -155,121 +156,185 @@ input[type="radio"]:checked + label {
       <h3>感覚機能評価</h3>
 
       {% if step == 0 %}
-        <!-- 🛠 オペ前は無条件で全部表示 -->
+        <!-- オペ前は全部表示 -->
         <div class="form-group">
-          <label><strong>A領域</strong></label>
-          {{ form.sensory_A }}
+          <label><strong>A領域 内側前腕皮神経</strong></label>
+          <div class="inline-radio">
+            {% for radio in form.sensory_A %}
+              {{ radio.tag }}<label for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+            {% endfor %}
+          </div>
         </div>
         <div class="form-group">
-          <label><strong>B領域</strong></label>
-          {{ form.sensory_B }}
+          <label><strong>B領域　後前腕皮神経</strong></label>
+          <div class="inline-radio">
+            {% for radio in form.sensory_B %}
+              {{ radio.tag }}<label for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+            {% endfor %}
+          </div>
         </div>
         <div class="form-group">
-          <label><strong>C領域</strong></label>
-          {{ form.sensory_C }}
+          <label><strong>C領域　外側前腕皮神経</strong></label>
+          <div class="inline-radio">
+            {% for radio in form.sensory_C %}
+              {{ radio.tag }}<label for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+            {% endfor %}
+          </div>
         </div>
         <div class="form-group">
-          <label><strong>D領域</strong></label>
-          {{ form.sensory_D }}
+          <label><strong>D領域　橈骨神経浅枝</strong></label>
+          <div class="inline-radio">
+            {% for radio in form.sensory_D %}
+              {{ radio.tag }}<label for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+            {% endfor %}
+          </div>
         </div>
       {% else %}
-        <!-- 🛠 それ以外は performed_point_x を見て切り替え -->
+        <!-- それ以外はperformed_point_xで切り替え -->
         {% if performed_point_1 %}
-        <div class="form-group">
-          <label><strong>A領域</strong></label>
-          {{ form.sensory_A }}
-        </div>
+          <div class="form-group">
+            <label><strong>A領域　内側前腕皮神経領域</strong></label>
+            <div class="inline-radio">
+              {% for radio in form.sensory_A %}
+                {{ radio.tag }}<label for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+              {% endfor %}
+            </div>
+          </div>
         {% endif %}
-        
         {% if performed_point_2 %}
-        <div class="form-group">
-          <label><strong>B領域</strong></label>
-          {{ form.sensory_B }}
-        </div>
+          <div class="form-group">
+            <label><strong>B領域　後前腕皮神経領域</strong></label>
+            <div class="inline-radio">
+              {% for radio in form.sensory_B %}
+                {{ radio.tag }}<label for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+              {% endfor %}
+            </div>
+          </div>
         {% endif %}
-        
         {% if performed_point_3 %}
-        <div class="form-group">
-          <label><strong>C領域</strong></label>
-          {{ form.sensory_C }}
-        </div>
+          <div class="form-group">
+            <label><strong>C領域　外側前腕皮神経</strong></label>
+            <div class="inline-radio">
+              {% for radio in form.sensory_C %}
+                {{ radio.tag }}<label for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+              {% endfor %}
+            </div>
+          </div>
         {% endif %}
-        
         {% if performed_point_4 %}
-        <div class="form-group">
-          <label><strong>D領域</strong></label>
-          {{ form.sensory_D }}
-        </div>
+          <div class="form-group">
+            <label><strong>D領域　橈骨神経浅枝領域</strong></label>
+            <div class="inline-radio">
+              {% for radio in form.sensory_D %}
+                {{ radio.tag }}<label for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+              {% endfor %}
+            </div>
+          </div>
         {% endif %}
       {% endif %}
-
       
-
-
-
+      <hr>
+      
       <h3>運動機能評価</h3>
+      
       <div class="form-group">
         <label><strong>肘関節屈曲</strong></label>
-        {{ form.motor_elbow }}
+        <div class="inline-radio">
+          {% for radio in form.motor_elbow %}
+            {{ radio.tag }}<label for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+          {% endfor %}
+        </div>
       </div>
-
+      
       <div class="form-group">
         <label><strong>グーパーグーパー</strong></label>
-        {{ form.motor_hand }}
+        <div class="inline-radio">
+          {% for radio in form.motor_hand %}
+            {{ radio.tag }}<label for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+          {% endfor %}
+        </div>
       </div>
-
-
-  <h3>ブロックポイント観察</h3>
-
-  {% if step == 0 %}
-    <!-- 🛠 オペ前は無条件で全部表示 -->
-    <div class="form-group">
-      <label><strong>ブロックポイント①</strong></label>
-      {{ form.observation_1 }}
-    </div>
-    <div class="form-group">
-      <label><strong>ブロックポイント②</strong></label>
-      {{ form.observation_2 }}
-    </div>
-    <div class="form-group">
-      <label><strong>ブロックポイント③</strong></label>
-      {{ form.observation_3 }}
-    </div>
-    <div class="form-group">
-      <label><strong>ブロックポイント④</strong></label>
-      {{ form.observation_4 }}
-    </div>
-  {% else %}
-    <!-- 🛠 それ以外は performed_point_x を見て切り替え -->
-    {% if performed_point_1 %}
-    <div class="form-group">
-      <label><strong>ブロックポイント①</strong></label>
-      {{ form.observation_1 }}
-    </div>
-    {% endif %}
-    
-    {% if performed_point_2 %}
-    <div class="form-group">
-      <label><strong>ブロックポイント②</strong></label>
-      {{ form.observation_2 }}
-    </div>
-    {% endif %}
-    
-    {% if performed_point_3 %}
-    <div class="form-group">
-      <label><strong>ブロックポイント③</strong></label>
-      {{ form.observation_3 }}
-    </div>
-    {% endif %}
-    
-    {% if performed_point_4 %}
-    <div class="form-group">
-      <label><strong>ブロックポイント④</strong></label>
-      {{ form.observation_4 }}
-    </div>
-    {% endif %}
-  {% endif %}
-
+      
+      <hr>
+      
+      <h3>ブロックポイント観察</h3>
+      
+      {% if step == 0 %}
+        <div class="form-group">
+          <label><strong>ブロックポイント①内側前腕皮神経</strong></label>
+          <div class="inline-radio">
+            {% for radio in form.observation_1 %}
+              {{ radio.tag }}<label for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+            {% endfor %}
+          </div>
+        </div>
+        <div class="form-group">
+          <label><strong>ブロックポイント②後前腕皮神経</strong></label>
+          <div class="inline-radio">
+            {% for radio in form.observation_2 %}
+              {{ radio.tag }}<label for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+            {% endfor %}
+          </div>
+        </div>
+        <div class="form-group">
+          <label><strong>ブロックポイント③外側前腕皮神経</strong></label>
+          <div class="inline-radio">
+            {% for radio in form.observation_3 %}
+              {{ radio.tag }}<label for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+            {% endfor %}
+          </div>
+        </div>
+        <div class="form-group">
+          <label><strong>ブロックポイント④橈骨神経浅枝</strong></label>
+          <div class="inline-radio">
+            {% for radio in form.observation_4 %}
+              {{ radio.tag }}<label for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+            {% endfor %}
+          </div>
+        </div>
+      {% else %}
+        {% if performed_point_1 %}
+          <div class="form-group">
+            <label><strong>ブロックポイント①内側前腕皮神経</strong></label>
+            <div class="inline-radio">
+              {% for radio in form.observation_1 %}
+                {{ radio.tag }}<label for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+              {% endfor %}
+            </div>
+          </div>
+        {% endif %}
+        {% if performed_point_2 %}
+          <div class="form-group">
+            <label><strong>ブロックポイント②後前腕皮神経</strong></label>
+            <div class="inline-radio">
+              {% for radio in form.observation_2 %}
+                {{ radio.tag }}<label for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+              {% endfor %}
+            </div>
+          </div>
+        {% endif %}
+        {% if performed_point_3 %}
+          <div class="form-group">
+            <label><strong>ブロックポイント③外側前腕皮神経</strong></label>
+            <div class="inline-radio">
+              {% for radio in form.observation_3 %}
+                {{ radio.tag }}<label for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+              {% endfor %}
+            </div>
+          </div>
+        {% endif %}
+        {% if performed_point_4 %}
+          <div class="form-group">
+            <label><strong>ブロックポイント④橈骨神経浅枝</strong></label>
+            <div class="inline-radio">
+              {% for radio in form.observation_4 %}
+                {{ radio.tag }}<label for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+              {% endfor %}
+            </div>
+          </div>
+        {% endif %}
+      {% endif %}
+      
 
 
       <h3>記録者サイン(イニシャルでOK　例：AA, aa, ...etc)</h3>
@@ -308,10 +373,10 @@ input[type="radio"]:checked + label {
     </div>
       <ul>
         <li>ブロック使用薬剤：{{ anesthesia.drug_type }}</li>
-        <li>①：{{ anesthesia.block_amount_1 }} ml</li>
-        <li>②：{{ anesthesia.block_amount_2 }} ml</li>
-        <li>③：{{ anesthesia.block_amount_3 }} ml</li>
-        <li>④：{{ anesthesia.block_amount_4 }} ml</li>
+        <li>①内側前腕皮神経：{{ anesthesia.block_amount_1 }} ml</li>
+        <li>②後前腕皮神経：{{ anesthesia.block_amount_2 }} ml</li>
+        <li>③外側前腕皮神経：{{ anesthesia.block_amount_3 }} ml</li>
+        <li>④橈骨神経浅枝：{{ anesthesia.block_amount_4 }} ml</li>
         <li>追加局所麻酔 0.5％：{{ anesthesia.additional_0_5 }} ml</li>
         <li>追加局所麻酔 1％：{{ anesthesia.additional_1_0 }} ml</li>
       </ul>
