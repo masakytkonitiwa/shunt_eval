@@ -52,11 +52,9 @@ class EvaluationForm(forms.ModelForm):
         fields = [
             'sensory_A', 'sensory_B', 'sensory_C', 'sensory_D',
             'motor_elbow', 'motor_hand',
-            'observation_1', 'observation_2', 'observation_3', 'observation_4',
-            'signer'
+            'observation_1', 'observation_2', 'observation_3', 'observation_4'
         ]
         widgets = {
-            'signer': forms.TextInput(attrs={'placeholder': '記録者名'}),
         }
 
     def __init__(self, *args, **kwargs):

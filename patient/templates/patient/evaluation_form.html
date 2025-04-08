@@ -78,6 +78,7 @@
     button:hover {
       background-color: #1976D2;
     }
+    
 
     .inline-radio input[type="radio"] {
   display: none;
@@ -337,11 +338,10 @@ input[type="radio"]:checked + label {
       
 
 
-      <h3>記録者サイン(イニシャルでOK　例：AA, aa, ...etc)</h3>
-      {{ form.signer.label_tag }} {{ form.signer }}
+
 
       <button type="submit">{% if step == 7 %}保存して終了{% else %}保存(次へ){% endif %}</button>
-    </form>
+
 
     <hr style="margin: 2rem 0;">
     <h3>患者情報・手術情報</h3>
@@ -392,7 +392,6 @@ input[type="radio"]:checked + label {
       <th>A</th><th>B</th><th>C</th><th>D</th>
       <th>肘</th><th>グ</th>
       <th>①</th><th>②</th><th>③</th><th>④</th>
-      <th>記録者</th>
     </tr>
   </thead>
   <tbody>
@@ -425,20 +424,19 @@ input[type="radio"]:checked + label {
       <td>{{ e.observation_2 }}</td>
       <td>{{ e.observation_3 }}</td>
       <td>{{ e.observation_4 }}</td>
-      <td>{{ e.signer }}</td>
     </tr>
     {% empty %}
     <tr><td colspan="12">まだ入力はありません。</td></tr>
     {% endfor %}
   </tbody>
 </table>
+<button type="submit">{% if step == 7 %}保存して終了{% else %}保存(次へ){% endif %}</button>
 
-<div style="text-align: center; margin-top: 2rem;">
-  <a href="{% url 'dashboard' %}" 
-     style="display: inline-block; background-color: #2196F3; color: white; padding: 0.7rem 1.5rem; border-radius: 8px; text-decoration: none;">
-    ダッシュボードに戻る
-  </a>
-</div>
+<button type="button" 
+onclick="location.href='{% url 'dashboard' %}'"
+style="padding: 1rem 2rem; background-color: #4CAF50; color: white; border: none; border-radius: 8px; font-size: 1rem; cursor: pointer;">
+ダッシュボードに戻る
+</button>
 </div>
 <script>
   // ページロード時にlocalStorageからデータを復元する
@@ -469,7 +467,7 @@ input[type="radio"]:checked + label {
   });
   </script>
   
-
+</form>
 
 </body>
 </html>
