@@ -86,6 +86,15 @@ class Evaluation(models.Model):
         (0, '0:異常なし'), 
         (1, '1:血腫、腫脹、赤みなど、何らかの異常あり'),
     ]
+    
+    
+    #麻酔が覚めたと感じた時刻
+    awakening_time = models.CharField(
+        max_length=5,
+        null=True,
+        blank=True,
+        verbose_name="麻酔が覚めたと感じた時刻"
+    )
 
     
     operation = models.ForeignKey(Operation, on_delete=models.CASCADE, related_name='evaluations')
@@ -108,8 +117,6 @@ class Evaluation(models.Model):
     observation_2 = models.IntegerField(choices=OBS_CHOICES, null=True, blank=True)
     observation_3 = models.IntegerField(choices=OBS_CHOICES, null=True, blank=True)
     observation_4 = models.IntegerField(choices=OBS_CHOICES, null=True, blank=True)
-
-    signer = models.CharField(max_length=50, blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
 

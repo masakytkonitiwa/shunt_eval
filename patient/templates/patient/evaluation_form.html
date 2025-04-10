@@ -153,7 +153,6 @@ input[type="radio"]:checked + label {
 
 
 
-
       <h3>感覚機能評価</h3>
 
       {% if step == 0 %}
@@ -234,6 +233,46 @@ input[type="radio"]:checked + label {
         {% endif %}
       {% endif %}
       
+      <hr>
+
+
+      {% if step >= 2 %}
+      <h3>麻酔が覚めてきた時間（自己申告）</h3>
+      
+      {% if awakening_none %}
+          <div style="padding: 1rem; background-color: #fff3cd; border-radius: 8px; margin-bottom: 1rem; color: #856404;">
+            <strong>現在、痛みなし（まだ麻酔効果持続中）と記録されています。</strong>
+          </div>
+      
+          <div class="form-group">
+            <label><strong>痛みを感じたら、何時ごろか再度記録してください</strong></label>
+            <div class="inline-radio">
+              {% for radio in form.awakening_time %}
+                {{ radio.tag }}<label for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+              {% endfor %}
+            </div>
+          </div>
+      
+      {% elif awakening_recorded %}
+          <div style="padding: 1rem; background-color: #e0f7fa; border-radius: 8px; margin-bottom: 1rem;">
+            <strong>覚醒時間は" {{ awakening_value }} 頃"として記録済みです。</strong>
+          </div>
+      
+      {% else %}
+          <div class="form-group">
+            <label><strong>何時ごろチクチク・ヒリヒリを感じたか？</strong></label>
+            <div class="inline-radio">
+              {% for radio in form.awakening_time %}
+                {{ radio.tag }}<label for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+              {% endfor %}
+            </div>
+          </div>
+      {% endif %}
+      {% endif %}
+      
+    
+      
+
       <hr>
       
       <h3>運動機能評価</h3>
@@ -335,11 +374,7 @@ input[type="radio"]:checked + label {
           </div>
         {% endif %}
       {% endif %}
-      
-
-
-
-
+      <hr>
       <button type="submit">{% if step == 7 %}保存して終了{% else %}保存(次へ){% endif %}</button>
 
 
@@ -424,50 +459,90 @@ input[type="radio"]:checked + label {
       <td>{{ e.observation_2 }}</td>
       <td>{{ e.observation_3 }}</td>
       <td>{{ e.observation_4 }}</td>
+
     </tr>
     {% empty %}
     <tr><td colspan="12">まだ入力はありません。</td></tr>
     {% endfor %}
   </tbody>
 </table>
+
+<hr>
+
+<div style="margin-top: 2rem; padding: 1.5rem; background-color: #e0f7fa; border-radius: 10px;">
+  <h3 style="margin-top: 0;">覚醒時刻(自己申告)  </h3>
+
+  {% if awakening_value %}
+    <p><strong>痛みを感じた時間：</strong> {{ awakening_value }}</p>
+  {% elif awakening_none %}
+    <p><strong>現在も痛みなし（麻酔効果持続中）</strong></p>
+  {% else %}
+    <p>記録はありません。</p>
+  {% endif %}
+</div>
+
 <button type="submit">{% if step == 7 %}保存して終了{% else %}保存(次へ){% endif %}</button>
 
-<button type="button" 
-onclick="location.href='{% url 'dashboard' %}'"
-style="padding: 1rem 2rem; background-color: #4CAF50; color: white; border: none; border-radius: 8px; font-size: 1rem; cursor: pointer;">
-ダッシュボードに戻る
-</button>
+
+
+</form>
+
+
+<div style="text-align: center; margin-top: 2rem;">
+  <button type="button" 
+  onclick="location.href='{% url 'dashboard' %}'"
+  style="padding: 1rem 2rem; background-color: #4CAF50; color: white; border: none; border-radius: 8px; font-size: 1rem; cursor: pointer;">
+    ダッシュボードに戻る
+  </button>
 </div>
+</div>
+
+
+
+
+
 <script>
   // ページロード時にlocalStorageからデータを復元する
   window.onload = function() {
-      const fields = document.querySelectorAll('input, select, textarea');
-      fields.forEach(field => {
-          const saved = localStorage.getItem(field.name);
-          if (saved !== null) {
-              field.value = saved;
+    const fields = document.querySelectorAll('input, select, textarea');
+    fields.forEach(field => {
+      const saved = localStorage.getItem(field.name);
+      if (saved !== null) {
+        if (field.type === 'radio') {
+          if (field.value === saved) {
+            field.checked = true;
           }
-      });
+        } else {
+          field.value = saved;
+        }
+      }
+    });
   };
-  
+
   // 入力するたびにlocalStorageに保存する
   document.addEventListener('input', function(event) {
-      const field = event.target;
-      if (field.name) {
+    const field = event.target;
+    if (field.name) {
+      if (field.type === 'radio') {
+        if (field.checked) {
           localStorage.setItem(field.name, field.value);
+        }
+      } else {
+        localStorage.setItem(field.name, field.value);
       }
+    }
   });
-  
+
   // フォーム送信時にlocalStorageのデータをクリアする
   document.addEventListener('submit', function(event) {
-      const fields = document.querySelectorAll('input, select, textarea');
-      fields.forEach(field => {
-          localStorage.removeItem(field.name);
-      });
+    const fields = document.querySelectorAll('input, select, textarea');
+    fields.forEach(field => {
+      localStorage.removeItem(field.name);
+    });
   });
-  </script>
-  
-</form>
+</script>
+
+
 
 </body>
 </html>

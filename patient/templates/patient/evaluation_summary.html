@@ -132,9 +132,7 @@
           <th>記録時刻</th>
           <th>A</th><th>B</th><th>C</th><th>D</th>
           <th>肘</th><th>手</th>
-          <th>①</th><th>②</th><th>③</th><th>④</th>
-          <th>記録者</th>
-        </tr>
+          <th>①</th><th>②</th><th>③</th><th>④</th> 
       </thead>
       <tbody>
         {% for e in evaluations %}
@@ -172,6 +170,35 @@
         {% endfor %}
       </tbody>
     </table>
+
+    <hr>
+
+  <hr>
+
+
+  <div style="margin-top: 2rem; padding: 1.5rem; background-color: #e0f7fa; border-radius: 10px;">
+    <h3 style="margin-top: 0;">覚醒時刻(自己申告)</h3>
+  
+    {% if evaluations %}
+      <ul style="list-style-type: disc; padding-left: 1.5rem;">
+        {% for e in evaluations %}
+          {% if e.awakening_time %}
+            <li style="margin-bottom: 0.5rem;">
+              {% if e.awakening_time == "none" %}
+                痛みなし（麻酔効果持続中）
+              {% else %}
+                {{ e.awakening_time }}
+              {% endif %}
+            </li>
+          {% endif %}
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p>記録はありません。</p>
+    {% endif %}
+  </div>
+
+
 
     <div class="back-btn">
       <a href="{% url 'dashboard' %}">ダッシュボードに戻る</a>

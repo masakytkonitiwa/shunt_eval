@@ -2,7 +2,7 @@ from django import forms
 from .models import Patient, Operation, Evaluation, AnesthesiaInfo
 from django.utils.timezone import localtime
 from decimal import Decimal
-
+from django.utils import timezone
 # --- ここから Patient 登録用フォーム ---
 class PatientIDForm(forms.ModelForm):
     class Meta:
@@ -52,15 +52,37 @@ class EvaluationForm(forms.ModelForm):
         fields = [
             'sensory_A', 'sensory_B', 'sensory_C', 'sensory_D',
             'motor_elbow', 'motor_hand',
-            'observation_1', 'observation_2', 'observation_3', 'observation_4'
+            'observation_1', 'observation_2', 'observation_3', 'observation_4',
+            'awakening_time'
         ]
+        labels = {
+            'awakening_time': '麻酔が覚めてきた時間（自己申告）',
+            'sensory_A': 'A領域 内側前腕皮神経',
+            'sensory_B': 'B領域 後前腕皮神経',
+            'sensory_C': 'C領域 外側前腕皮神経',
+            'sensory_D': 'D領域 橈骨神経浅枝',
+            'motor_elbow': '肘関節屈曲',
+            'motor_hand': 'グーパーグーパー',
+            'observation_1': 'ブロックポイント①内側前腕皮神経',
+            'observation_2': 'ブロックポイント②後前腕皮神経',
+            'observation_3': 'ブロックポイント③外側前腕皮神経',
+            'observation_4': 'ブロックポイント④橈骨神経浅枝',
+        }
         widgets = {
+            'awakening_time': forms.RadioSelect(),  # ★ここ！choicesは指定しない！！
         }
 
-    def __init__(self, *args, **kwargs):
+
+
+    def __init__(self, *args, anesthesia_end_time=None, **kwargs):
         step = kwargs.pop('step', None)
         super().__init__(*args, **kwargs)
-
+        
+                # 🌟 デバッグ追加！！！
+        print("=== __init__ start ===")
+        print(f"step: {step}")
+        print(f"anesthesia_end_time: {anesthesia_end_time}")
+        
         sensory_choices = [
             (0, '0点: 正常な感覚（無麻酔）'),
             (1, '1点: 鈍い（部分的ブロック）'),
@@ -103,9 +125,38 @@ class EvaluationForm(forms.ModelForm):
             ]:
                 self.fields[field_name].initial = 0
 
+
+        if step and int(step) >= 2 and anesthesia_end_time:
+            base_time = anesthesia_end_time
+            choices = []
+            for half_hours in range(1, 13):
+                delta = timezone.timedelta(minutes=30 * half_hours)
+                candidate_time = base_time + delta
+
                 
                 
-                
+                localized_time = localtime(candidate_time)
+                label = localized_time.strftime("%H:%M頃")
+                value = localized_time.strftime("%H:%M")
+                choices.append((value, label))
+
+            # 🔥 ここでchoicesを出力してみる
+            print("=== 覚醒時刻choices ===")
+            for c in choices:
+                print(c)
+
+
+            # 🌟 選択肢の順番を工夫して追加
+            choices.insert(0, ('none', '痛みなし（まだ麻酔が冷めていない）'))
+            choices.insert(0, ('', '--- 覚醒時刻を選択してください ---'))
+
+            self.fields['awakening_time'].widget = forms.RadioSelect(choices=choices)
+            self.fields['awakening_time'].choices = choices
+
+            # 初期値なし、required=Falseで毎回選び直せるように
+            self.fields['awakening_time'].initial = None
+            self.fields['awakening_time'].required = False
+                        
 # --- AnesthesiaInfo フォーム（麻酔情報入力）---
 
 # ブロックポイント 0〜2mlを0.1刻み

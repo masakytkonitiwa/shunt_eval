@@ -15,6 +15,9 @@ from .models import Operation, AnesthesiaInfo
 from .forms import AnesthesiaInfoForm
 from django.http import HttpResponseServerError
 
+from decimal import Decimal
+
+
 def test_server_error(request):
     return HttpResponseServerError()
 
@@ -82,6 +85,8 @@ def add_operation(request, patient_id):
           
             # ✅ OP前（step=0）の評価フォームへ遷移
             return redirect('evaluation_step', operation_id=operation.id, step=0)
+            return redirect('evaluation_step', operation_id=operation.id, step=int(0))
+
     else:            
 
         form = OperationForm()
@@ -106,36 +111,72 @@ def add_new_operation_view(request):
         'form': form,
     })
 
-
-
-
 @login_required
 def evaluation_step_view(request, operation_id, step):
     operation = get_object_or_404(Operation, id=operation_id)
-    anesthesia = AnesthesiaInfo.objects.filter(operation=operation).first()  # ✅ 麻酔情報取得
+    anesthesia = AnesthesiaInfo.objects.filter(operation=operation).first()
     timepoint = str(step)
     timepoint_label = dict(Evaluation.TIMEPOINT_CHOICES).get(timepoint, timepoint)
 
+    # ✅ 全stepのevaluationを取得して、過去の麻酔覚醒状況をチェック
+    past_evaluations = Evaluation.objects.filter(operation=operation).order_by('timepoint')
+
+    awakening_none = False
+    awakening_recorded = False
+    awakening_value = None
+
+    for ev in past_evaluations:
+        if ev.awakening_time == 'none':
+            awakening_none = True
+        elif ev.awakening_time:
+            # 最初に時刻記録（痛みあり）を見つけたらそれを使う
+            awakening_recorded = True
+            awakening_value = ev.awakening_time
+            awakening_none = False  # 時刻を記録したら、痛みなし状態は解除
+            break  # もうそれ以降は見る必要なし
+
+
+    # ✅ 麻酔直後step=1の created_atを取得
+    anesthesia_end_evaluation = Evaluation.objects.filter(operation=operation, timepoint="1").first()
+    anesthesia_end_time = anesthesia_end_evaluation.created_at if anesthesia_end_evaluation else None
+
     if request.method == 'POST':
-        form = EvaluationForm(request.POST, step=step)
+        print("=== POSTきた！===")
+        form = EvaluationForm(request.POST, step=step, anesthesia_end_time=anesthesia_end_time)
+
         if form.is_valid():
             evaluation = form.save(commit=False)
             evaluation.operation = operation
             evaluation.timepoint = timepoint
+
+            # 🔥 awakening_time を手動で上書き！（POSTされた値）
+            evaluation.awakening_time = form.cleaned_data.get('awakening_time')
+
             evaluation.save()
-            if step + 1 < len(Evaluation.TIMEPOINT_CHOICES):
-                if step == 0:
+
+            print("=== 保存完了！===")
+            print(f"awakening_time: {evaluation.awakening_time}")
+
+            # ✅ 保存できたらすぐリダイレクト（重要）
+            if int(step) + 1 < len(Evaluation.TIMEPOINT_CHOICES):
+                if int(step) == 0:
                     return redirect('add_anesthesia_info', operation_id=operation.id)
                 else:
-                    return redirect('evaluation_step', operation_id=operation.id, step=step + 1)
+                    return redirect('evaluation_step', operation_id=operation.id, step=int(step) + 1)
             else:
                 return redirect('evaluation_summary', operation_id=operation.id)
+
+        else:
+            # ❗ フォームエラーのとき、ここでエラー内容を表示
+            print("=== form.errors ===")
+            print(form.errors)
+
     else:
-        form = EvaluationForm(step=step)  # ← GETのときは step だけ渡す！
+        # ✅ GETリクエスト（ページ初期表示）
+        form = EvaluationForm(step=step, anesthesia_end_time=anesthesia_end_time)
 
     evaluations = Evaluation.objects.filter(operation=operation).order_by('timepoint')
 
-    # 🆕 ここから施行フラグ作成！！
     performed_points = {
         'performed_point_1': anesthesia.block_amount_1 > 0 if anesthesia else False,
         'performed_point_2': anesthesia.block_amount_2 > 0 if anesthesia else False,
@@ -151,10 +192,16 @@ def evaluation_step_view(request, operation_id, step):
         'evaluations': evaluations,
         'operation': operation,
         'anesthesia': anesthesia,
-        **performed_points,  # 🆕 ここでフラグをテンプレートに渡す
+        **performed_points,
+        'awakening_recorded': awakening_recorded,
+        'awakening_value': awakening_value,
+        'awakening_none': awakening_none,
     })
 
-from decimal import Decimal
+
+
+
+
 @login_required
 def add_anesthesia_info(request, operation_id):
     operation = get_object_or_404(Operation, id=operation_id)
@@ -169,7 +216,7 @@ def add_anesthesia_info(request, operation_id):
         else:
             # 🛑 ここを追加 🛑
             print("=== フォームエラー内容 ===")
-            print(form.errors)
+           
     else:
         form = AnesthesiaInfoForm(initial={
             'drug_type': 'Eなし',
@@ -199,22 +246,20 @@ def start_evaluation_view(request, operation_id):
     # 全てのstepが記録済みなら summary に行く！
     return redirect('evaluation_summary', operation_id=operation.id)
 
-
+    
 @login_required
 def evaluation_summary_view(request, operation_id):
     operation = get_object_or_404(Operation, id=operation_id)
     evaluations = Evaluation.objects.filter(operation=operation).order_by('timepoint')
     anesthesia = AnesthesiaInfo.objects.filter(operation=operation).first()
-    
-    try:
-        anesthesia = AnesthesiaInfo.objects.get(operation=operation)
-    except AnesthesiaInfo.DoesNotExist:
-        anesthesia = None
+
     return render(request, 'patient/evaluation_summary.html', {
         'operation': operation,
         'evaluations': evaluations,
         'anesthesia': anesthesia,
     })
+
+
 
 @login_required
 def edit_operation(request, operation_id):
