@@ -71,7 +71,11 @@
         <a href="{% url 'logout' %}" class="btn-logout">ログアウト</a>
       </div>
     <h2>ダッシュボード</h2>
-
+    
+    <div style="margin: 1rem 0; padding: 1rem; background-color: #e0f7fa; border-radius: 10px; text-align: center; font-size: 1.1rem;">
+      新たに患者を登録する場合は「新規登録」から進んでください。<br>
+      評価を再開するには、患者を選択してください。
+    </div>
     <!-- 新規登録ボタン -->
     <form action="{% url 'add_new_operation' %}" method="get">
         <button type="submit" class="button new-button">新規登録</button>

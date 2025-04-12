@@ -5,15 +5,18 @@
   <link rel="apple-touch-icon" sizes="180x180" href="{% static 'patient/images/fruit_peach.png' %}">
   <meta charset="UTF-8">
   <title>ログイン(半角英数字)</title>
+
   <style>
     body {
       font-family: sans-serif;
       background-color: #f4f4f4;
       display: flex;
       justify-content: center;
-      align-items: center;
+      align-items: flex-start; /* 中央→上寄せに変更！ */
       height: 100vh;
+      padding-top: 5vh; /* 少し余白も追加してバランス調整！ */
     }
+
 
     .login-container {
       background: white;
@@ -61,6 +64,10 @@
 <body>
   <div class="login-container">
     <h2>ログイン</h2>
+    <div style="margin: 1rem 0; padding: 1rem; background-color: #e0f7fa; border-radius: 10px; text-align: center; font-size: 1.1rem;">
+      ※半角英数字で入力してください。
+    </div>
+    
     <form method="post">
       {% csrf_token %}
       {{ form.as_p }}

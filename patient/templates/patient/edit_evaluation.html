@@ -184,7 +184,20 @@ input[type="radio"]:checked + label {
       {% endfor %}
 
       <hr>
-
+  <!-- 覚醒時刻（自己申告） -->
+  <h3>覚醒時刻（自己申告）</h3>
+  {% for field in form %}
+    {% if field.name == "awakening_time" %}
+      <div class="form-group">
+        <label>{{ field.label }}</label>
+        <div class="inline-radio">
+          {% for radio in field %}
+            {{ radio.tag }}<label for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+  {% endfor %}
       <!-- ブロックポイント観察 -->
       <h3>ブロックポイント観察</h3>
       {% for field in form %}

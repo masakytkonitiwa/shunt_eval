@@ -148,6 +148,11 @@ input[type="radio"]:checked + label {
     </div>
 
     <h2> {{ timepoint_label }}</h2>
+
+    <div style="margin: 1rem 0; padding: 1rem; background-color: #e0f7fa; border-radius: 10px; text-align: center; font-size: 1.1rem;">
+      評価を入力してください。<br>
+      入力が完了したら「保存」を押してください。
+    </div>
     <form method="post">
       {% csrf_token %}
 
@@ -375,7 +380,7 @@ input[type="radio"]:checked + label {
         {% endif %}
       {% endif %}
       <hr>
-      <button type="submit">{% if step == 7 %}保存して終了{% else %}保存(次へ){% endif %}</button>
+      <button type="submit">保存</button>
 
 
     <hr style="margin: 2rem 0;">
@@ -481,7 +486,9 @@ input[type="radio"]:checked + label {
   {% endif %}
 </div>
 
-<button type="submit">{% if step == 7 %}保存して終了{% else %}保存(次へ){% endif %}</button>
+
+<button type="submit">保存</button>
+
 
 
 

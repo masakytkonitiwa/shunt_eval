@@ -9,11 +9,11 @@
       background-color: #f4f4f4;
       display: flex;
       justify-content: center;
-      align-items: center;
+      align-items: flex-start; /* 中央 → 上寄せ！ */
       height: 100vh;
       margin: 0;
+      padding-top: 5vh; /* 上に5%くらいの余白を入れる */
     }
-
     .card {
       background-color: white;
       padding: 2rem 3rem;
@@ -60,6 +60,10 @@
 <body>
   <div class="card">
     <h2>患者IDを入力してください</h2>
+    <div style="margin: 1rem 0; padding: 1rem; background-color: #e0f7fa; border-radius: 10px; text-align: center; font-size: 1.1rem;">
+      ※半角英数字で入力してください。
+    </div>
+    
     <form method="post">
       {% csrf_token %}
       {{ form.as_p }}

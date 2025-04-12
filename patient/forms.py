@@ -25,6 +25,12 @@ class OperationForm(forms.ModelForm):
             'height': forms.NumberInput(attrs={'min': 0, 'max': 250, 'step': 0.1}),
             'weight': forms.NumberInput(attrs={'min': 0, 'max': 200, 'step': 0.1}),
             'date': forms.DateTimeInput(attrs={'type': 'datetime-local'}, format='%Y-%m-%dT%H:%M'),
+                        
+            # 🆕 ここ追加するだけ！！
+            'gender': forms.RadioSelect(),
+            'procedure': forms.RadioSelect(),
+            'surgery_type': forms.RadioSelect(),
+            'surgeon': forms.RadioSelect(),
         }
 
     def __init__(self, *args, **kwargs):

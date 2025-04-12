@@ -158,12 +158,13 @@ def evaluation_step_view(request, operation_id, step):
             print(f"awakening_time: {evaluation.awakening_time}")
 
             # ✅ 保存できたらすぐリダイレクト（重要）
-            if int(step) + 1 < len(Evaluation.TIMEPOINT_CHOICES):
-                if int(step) == 0:
-                    return redirect('add_anesthesia_info', operation_id=operation.id)
-                else:
-                    return redirect('evaluation_step', operation_id=operation.id, step=int(step) + 1)
+            # ✅ ここ！リダイレクト先をステップによって分岐させる
+            if int(step) == 0:
+                return redirect('add_anesthesia_info', operation_id=operation.id)
+            elif int(step) == 1:
+                return redirect('evaluation_step', operation_id=operation.id, step=2)
             else:
+                # step 2 以上はサマリーへ
                 return redirect('evaluation_summary', operation_id=operation.id)
 
         else:
@@ -246,6 +247,7 @@ def start_evaluation_view(request, operation_id):
     # 全てのstepが記録済みなら summary に行く！
     return redirect('evaluation_summary', operation_id=operation.id)
 
+
     
 @login_required
 def evaluation_summary_view(request, operation_id):
@@ -253,11 +255,27 @@ def evaluation_summary_view(request, operation_id):
     evaluations = Evaluation.objects.filter(operation=operation).order_by('timepoint')
     anesthesia = AnesthesiaInfo.objects.filter(operation=operation).first()
 
+    # ✅ ここで覚醒時刻を整理しておく
+    awakening_value = None
+    for e in evaluations:
+        if e.awakening_time and e.awakening_time != "none":
+            awakening_value = e.awakening_time
+            break
+
+    if not awakening_value:
+        # 時刻が1つもなかった場合、"none"を探す
+        for e in evaluations:
+            if e.awakening_time == "none":
+                awakening_value = "none"
+                break
+
     return render(request, 'patient/evaluation_summary.html', {
         'operation': operation,
         'evaluations': evaluations,
         'anesthesia': anesthesia,
+        'awakening_value': awakening_value,  # 🆕 これも渡す！
     })
+
 
 
 
@@ -311,15 +329,22 @@ def edit_anesthesia_info(request, operation_id):
 @login_required
 def edit_evaluation(request, evaluation_id):
     evaluation = get_object_or_404(Evaluation, id=evaluation_id)
-    operation = evaluation.operation  # 戻る用に使います
+    operation = evaluation.operation
+
+    # 🆕 麻酔直後 step=1 の created_at を取得
+    anesthesia_end_evaluation = Evaluation.objects.filter(operation=operation, timepoint="1").first()
+    anesthesia_end_time = anesthesia_end_evaluation.created_at if anesthesia_end_evaluation else None
 
     if request.method == 'POST':
-        form = EvaluationForm(request.POST, instance=evaluation)
+        form = EvaluationForm(request.POST, instance=evaluation, step=evaluation.timepoint, anesthesia_end_time=anesthesia_end_time)
         if form.is_valid():
             form.save()
             return redirect('evaluation_summary', operation_id=operation.id)
     else:
-        form = EvaluationForm(instance=evaluation)
+        # 初期化時に、既存のawakening_timeを渡しておく
+        form = EvaluationForm(instance=evaluation, step=evaluation.timepoint, anesthesia_end_time=anesthesia_end_time)
+        if evaluation.awakening_time:
+            form.fields['awakening_time'].initial = evaluation.awakening_time
 
     return render(request, 'patient/edit_evaluation.html', {
         'form': form,
