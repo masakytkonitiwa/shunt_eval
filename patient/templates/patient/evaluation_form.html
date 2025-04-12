@@ -250,7 +250,7 @@ input[type="radio"]:checked + label {
           </div>
       
           <div class="form-group">
-            <label><strong>痛みを感じたら、何時ごろか再度記録してください</strong></label>
+            <label><strong>痛みを感じたら、何時ごろか記録してください(麻酔時刻から0.5時間毎になっています)</strong></label>
             <div class="inline-radio">
               {% for radio in form.awakening_time %}
                 {{ radio.tag }}<label for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
