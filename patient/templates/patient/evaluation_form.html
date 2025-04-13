@@ -423,17 +423,31 @@ input[type="radio"]:checked + label {
     {% endif %}
     
 <h3>入力済み評価の確認</h3>
-
 <table border="1" cellspacing="0" cellpadding="6" style="width: 100%; border-collapse: collapse;">
   <thead>
+    <!-- まとめヘッダー -->
     <tr style="background-color: #eee;">
-      <th></th>
-      <th>記録時刻</th>
-      <th>A</th><th>B</th><th>C</th><th>D</th>
-      <th>肘</th><th>グ</th>
-      <th>①</th><th>②</th><th>③</th><th>④</th>
+      <th rowspan="2"></th>
+      <th rowspan="2">記録時刻</th>
+      <th colspan="4">感覚機能評価</th>
+      <th colspan="2">運動機能評価</th>
+      <th colspan="4">ブロックポイント観察</th>
+    </tr>
+    <!-- 項目ヘッダー -->
+    <tr style="background-color: #eee;">
+      <th>A</th>
+      <th>B</th>
+      <th>C</th>
+      <th>D</th>
+      <th>肘</th>
+      <th>手</th>
+      <th>①</th>
+      <th>②</th>
+      <th>③</th>
+      <th>④</th>
     </tr>
   </thead>
+
   <tbody>
     {% for e in evaluations %}
     <tr>
@@ -464,13 +478,13 @@ input[type="radio"]:checked + label {
       <td>{{ e.observation_2 }}</td>
       <td>{{ e.observation_3 }}</td>
       <td>{{ e.observation_4 }}</td>
-
     </tr>
     {% empty %}
     <tr><td colspan="12">まだ入力はありません。</td></tr>
     {% endfor %}
   </tbody>
 </table>
+
 
 <hr>
 

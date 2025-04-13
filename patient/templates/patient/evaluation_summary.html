@@ -133,30 +133,38 @@
     <h3>評価一覧</h3>
     <table>
       <thead>
+        <!-- 上段ヘッダー -->
         <tr>
-          <th>時点</th>
-          <th>記録時刻</th>
-          <th>A</th><th>B</th><th>C</th><th>D</th>
-          <th>肘</th><th>手</th>
-          <th>①</th><th>②</th><th>③</th><th>④</th> 
+          <th rowspan="2">時点</th>
+          <th rowspan="2">記録時刻</th>
+          <th colspan="4">感覚機能評価</th>
+          <th colspan="2">運動機能評価</th>
+          <th colspan="4">ブロックポイント観察</th>
+        </tr>
+        <!-- 下段ヘッダー -->
+        <tr>
+          <th>A</th>
+          <th>B</th>
+          <th>C</th>
+          <th>D</th>
+          <th>肘</th>
+          <th>手</th>
+          <th>①</th>
+          <th>②</th>
+          <th>③</th>
+          <th>④</th>
+        </tr>
       </thead>
+    
       <tbody>
         {% for e in evaluations %}
         <tr>
           <td>
             {{ e.get_timepoint_display }}
             <a href="{% url 'edit_evaluation' e.id %}" 
-            style="
-             display: inline-block;
-             background-color: #4CAF50;
-             color: white;
-             padding: 0.2rem 0.6rem;
-             margin-left: 0.4rem;
-             border-radius: 6px;
-             font-size: 0.75rem;
-             text-decoration: none;">
-           編集
-         </a>
+              style="display: inline-block; background-color: #4CAF50; color: white; padding: 0.2rem 0.6rem; margin-left: 0.4rem; border-radius: 6px; font-size: 0.75rem; text-decoration: none;">
+              編集
+            </a>
           </td>
           <td>{{ e.created_at|date:"Y-m-d" }}（{{ e.created_at|japanese_weekday }}）{{ e.created_at|date:"H:i" }}</td>
           <td>{{ e.sensory_A }}</td>
@@ -169,7 +177,6 @@
           <td>{{ e.observation_2 }}</td>
           <td>{{ e.observation_3 }}</td>
           <td>{{ e.observation_4 }}</td>
-
         </tr>
         {% empty %}
         <tr><td colspan="13">まだ入力はありません。</td></tr>
