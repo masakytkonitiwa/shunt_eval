@@ -197,7 +197,20 @@ input[type="radio"]:checked + label {
         </div>
       </div>
     {% endif %}
+
   {% endfor %}
+
+  <!-- 記録時刻（created_at）入力欄 -->
+  <h3>記録時刻（自動 or 手動）</h3>
+  {% for field in form %}
+    {% if field.name == "created_at" %}
+      <div class="form-group">
+        <label>{{ field.label }}</label>
+        {{ field }}
+      </div>
+    {% endif %}
+  {% endfor %}
+
       <!-- ブロックポイント観察 -->
       <h3>ブロックポイント観察</h3>
       {% for field in form %}

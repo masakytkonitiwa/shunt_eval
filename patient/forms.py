@@ -1,8 +1,10 @@
 from django import forms
 from .models import Patient, Operation, Evaluation, AnesthesiaInfo
-from django.utils.timezone import localtime
 from decimal import Decimal
 from django.utils import timezone
+from django.utils.timezone import localtime, now  # ✅ これで OK
+
+
 # --- ここから Patient 登録用フォーム ---
 class PatientIDForm(forms.ModelForm):
     class Meta:
@@ -59,7 +61,7 @@ class EvaluationForm(forms.ModelForm):
             'sensory_A', 'sensory_B', 'sensory_C', 'sensory_D',
             'motor_elbow', 'motor_hand',
             'observation_1', 'observation_2', 'observation_3', 'observation_4',
-            'awakening_time'
+            'awakening_time', 'created_at', 
         ]
         labels = {
             'awakening_time': '麻酔が覚めてきた時間（自己申告）',
@@ -75,14 +77,19 @@ class EvaluationForm(forms.ModelForm):
             'observation_4': 'ブロックポイント④橈骨神経浅枝',
         }
         widgets = {
+            'created_at': forms.DateTimeInput(attrs={'type': 'datetime-local'}, format='%Y-%m-%dT%H:%M'),
             'awakening_time': forms.RadioSelect(),  # ★ここ！choicesは指定しない！！
         }
 
 
 
     def __init__(self, *args, anesthesia_end_time=None, **kwargs):
+        
+
         step = kwargs.pop('step', None)
         super().__init__(*args, **kwargs)
+        # 🆕 追加！
+        self.fields['created_at'].required = False
         
                 # 🌟 デバッグ追加！！！
         print("=== __init__ start ===")
@@ -130,6 +137,9 @@ class EvaluationForm(forms.ModelForm):
                 'observation_1', 'observation_2', 'observation_3', 'observation_4'
             ]:
                 self.fields[field_name].initial = 0
+                
+
+                self.initial['created_at'] = localtime(now()).strftime('%Y-%m-%dT%H:%M')
 
 
         if step and int(step) >= 2 and anesthesia_end_time:
@@ -162,6 +172,12 @@ class EvaluationForm(forms.ModelForm):
             # 初期値なし、required=Falseで毎回選び直せるように
             self.fields['awakening_time'].initial = None
             self.fields['awakening_time'].required = False
+            
+
+        
+        if self.instance and self.instance.created_at:
+            
+            self.initial['created_at'] = localtime(self.instance.created_at).strftime('%Y-%m-%dT%H:%M')
                         
 # --- AnesthesiaInfo フォーム（麻酔情報入力）---
 
@@ -176,11 +192,22 @@ for i in range(0, 21):
 # 追加麻酔 0〜50ml
 
 
-ADDITIONAL_CHOICES = []
-for i in range(0, 51):
-    value = Decimal(i).quantize(Decimal('0.0'))  # 小数点1桁に整形
-    ADDITIONAL_CHOICES.append((str(value), f"{value} ml"))
 
+
+# 追加麻酔 0〜20ml: 0.5刻み、20〜50ml: 1刻み
+ADDITIONAL_CHOICES = []
+
+# 0〜20ml を 0.5ml刻みで
+i = 0
+while i <= 20:
+    value = Decimal(i).quantize(Decimal('0.0'))
+    ADDITIONAL_CHOICES.append((str(value), f"{value} ml"))
+    i += Decimal('0.5')
+
+# 21〜50ml を 1ml刻みで
+for i in range(21, 51):
+    value = Decimal(i).quantize(Decimal('0.0'))
+    ADDITIONAL_CHOICES.append((str(value), f"{value} ml"))
 
 
 

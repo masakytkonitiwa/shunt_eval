@@ -123,7 +123,7 @@ class Evaluation(models.Model):
     observation_3 = models.IntegerField(choices=OBS_CHOICES, null=True, blank=True)
     observation_4 = models.IntegerField(choices=OBS_CHOICES, null=True, blank=True)
 
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
         return f"{self.operation} - {self.timepoint}"
