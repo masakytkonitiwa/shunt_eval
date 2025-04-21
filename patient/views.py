@@ -25,7 +25,7 @@ def test_server_error(request):
 @login_required
 def dashboard_view(request):
     today = timezone.now().date()
-    four_days_ago = today - timedelta(days=4)
+    four_days_ago = today - timedelta(days=365)
 
     # 直近4日以内の手術を取得（降順）
     recent_operations = Operation.objects.filter(date__date__gte=four_days_ago).order_by('-date')
