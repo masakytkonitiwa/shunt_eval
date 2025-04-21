@@ -129,14 +129,16 @@ class EvaluationForm(forms.ModelForm):
             self.fields[field_name].widget = forms.RadioSelect(choices=observation_choices)
             self.fields[field_name].required = False
 
-        # オペ前（step==0）のときだけ初期値0をセット
-        if step == 0 or step == '0':
-            for field_name in [
-                'sensory_A', 'sensory_B', 'sensory_C', 'sensory_D',
-                'motor_elbow', 'motor_hand',
-                'observation_1', 'observation_2', 'observation_3', 'observation_4'
-            ]:
+            # 感覚は step==0 のときだけ 0 を初期値
+            if step == 0 or step == '0':
+                for field_name in ['sensory_A', 'sensory_B', 'sensory_C', 'sensory_D']:
+                    self.fields[field_name].initial = 0
+
+            # 運動とブロック観察は常に 0 を初期値に設定
+            for field_name in ['motor_elbow', 'motor_hand',
+                            'observation_1', 'observation_2', 'observation_3', 'observation_4']:
                 self.fields[field_name].initial = 0
+
                 
 
                 self.initial['created_at'] = localtime(now()).strftime('%Y-%m-%dT%H:%M')
