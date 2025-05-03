@@ -351,3 +351,50 @@ def edit_evaluation(request, evaluation_id):
         'evaluation': evaluation,
         'timepoint_label': evaluation.get_timepoint_display(),
     })
+
+import csv
+from django.http import HttpResponse
+from django.contrib.auth.decorators import login_required
+from .models import Evaluation
+
+@login_required
+def export_block_data_csv(request):
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="block_data.csv"'
+
+    writer = csv.writer(response)
+    writer.writerow([
+        'Patient ID', '手術日', 'Timepoint',
+        'Sensory A', 'B', 'C', 'D',
+        'Motor Elbow', 'Hand',
+        'Obs 1', '2', '3', '4',
+        'Drug Type', 'Block1', '2', '3', '4',
+        'Add 0.5%', 'Add 1%',
+        '記録作成日時'
+    ])
+
+    evaluations = Evaluation.objects.select_related('operation__patient', 'operation__anesthesiainfo')
+
+    for e in evaluations:
+        op = e.operation
+        pt = op.patient
+        anesth = getattr(op, 'anesthesiainfo', None)
+
+        writer.writerow([
+            pt.patient_code,
+            op.date.strftime('%Y-%m-%d %H:%M'),
+            e.get_timepoint_display(),
+            e.sensory_A, e.sensory_B, e.sensory_C, e.sensory_D,
+            e.motor_elbow, e.motor_hand,
+            e.observation_1, e.observation_2, e.observation_3, e.observation_4,
+            anesth.drug_type if anesth else '',
+            anesth.block_amount_1 if anesth else '',
+            anesth.block_amount_2 if anesth else '',
+            anesth.block_amount_3 if anesth else '',
+            anesth.block_amount_4 if anesth else '',
+            anesth.additional_0_5 if anesth else '',
+            anesth.additional_1_0 if anesth else '',
+            e.created_at.strftime('%Y-%m-%d %H:%M')
+        ])
+
+    return response
