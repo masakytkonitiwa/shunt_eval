@@ -357,9 +357,13 @@ from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from .models import Evaluation
 
+
 @login_required
 def export_block_data_csv(request):
-    response = HttpResponse(content_type='text/csv')
+    # ✅ UTF-8 with BOM にする（Excel対策）
+    response = HttpResponse(
+        content_type='text/csv; charset=utf-8-sig'
+    )
     response['Content-Disposition'] = 'attachment; filename="block_data.csv"'
 
     writer = csv.writer(response)
