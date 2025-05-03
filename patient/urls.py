@@ -34,4 +34,4 @@ urlpatterns = [
     path('export/csv/', views.export_block_data_csv, name='export_block_data_csv'),  # ✅ これを追加
 ]
 
-]
+
