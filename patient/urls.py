@@ -31,5 +31,7 @@ urlpatterns = [
 
     path('test500/', views.test_server_error, name='test_server_error'),
 
+    path('export/csv/', views.export_block_data_csv, name='export_block_data_csv'),  # ✅ これを追加
+]
 
 ]
